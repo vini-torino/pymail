@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+# - * - encode: utf-8 - * -
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import random 
@@ -7,12 +9,11 @@ import smtplib
 import getpass
 import sys
 
-
+#Set  files, and cache dir 
 home = os.getenv('HOME')
 pymail_cache = home + '/.cache/pymail/tmp'
-if not os.path.isdir(pymail_cache): os.makedirs(pymail_cache)
-
-
+if not os.path.isdir(pymail_cache):
+    os.makedirs(pymail_cache)
 
 mail_scratch = pymail_cache + '/.s'+ str(random.randint(1,10000000000))
 mail_to_send =  pymail_cache + '/.m' + str(random.randint(1,10000000000))
@@ -20,11 +21,10 @@ cmd1 = 'cat > ' +  mail_scratch
 cmd2  = 'echo \'<p>\' > '  + mail_to_send
 cmd3 = 'sed "s,$,<br>,g" ' +  mail_scratch  + ' >> ' + mail_to_send
 
+
 server = smtplib.SMTP('smtp.gmail.com', 587)
 server.starttls()
-
 mail = MIMEMultipart()
-
 mail["From"] = str(input('From: '))
 
 try:
@@ -38,8 +38,6 @@ except smtplib.SMTPAuthenticationError as err:
 
 mail["To"] = str(input('To: '))
 mail['Subject'] = str(input('Subject: '))
-
-
 
 
 try:
@@ -60,13 +58,7 @@ remove_trash = 'rm -rf ' + pymail_cache
 subprocess.run(remove_trash, shell=True)
 
 msg = ''
-
 for line in lines:
     msg += line.rstrip()
-
-
 mail.attach(MIMEText(str(msg), 'html'))
-
-
-
 server.sendmail(mail['From'], mail['To'], mail.as_string())
